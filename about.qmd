@@ -1,6 +1,6 @@
 ---
 title: "Zhanwen Peng"
-image: profile.jpg
+#image: profile.jpg
 about:
   template: trestles
   links:
