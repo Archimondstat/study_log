@@ -57,6 +57,7 @@ quantile(km_model,0.5)$quantile
 According the result above, the estimated median is $6$.
 
 What if we use the same dataset but estimate survival median using `proc lifetest` in `SAS` instead.
+
 ```{sas engine="sas"}
 option locale='en_us';
 data surv_data;
@@ -79,25 +80,22 @@ ods exclude close;
 proc print data=ql;
 run;
 ```
+
 We can see that the estimation of median is actually `NA`, this means that `R` and `SAS` are using different formula to estimate the median.
 
-In short, `survival` package in `R` and early version of `SAS` (such as 9.1) estimate the quantiles using:
-$$
+In short, `survival` package in `R` and early version of `SAS` (such as 9.1) estimate the quantiles using: $$
 \begin{aligned}
 q_p &= \frac{1}{2}(\inf_t\{1-\hat{S}(t)\ge p\}+\sup_t\{1-\hat{S}(t)\le q\})\\
 &=\frac{1}{2}(\inf_t\{\hat{S}(t)\le 1-p\}+\sup_t\{\hat{S}(t)\ge 1-q\})\
 \end{aligned}
-$$
-Therefore the result from `survival` is $\frac{1}{2}(4+8)=6$.
+$$ Therefore the result from `survival` is $\frac{1}{2}(4+8)=6$.
 
-In `SAS 9.4`, the formula is
-$$
+In `SAS 9.4`, the formula is $$
 q_p = \min\{t_j|\hat{S}(t_j)<1-p\}
-$$
-Since there is no data point such that $\hat{S}(t_j)$ is strictly less then $0.5$, the estimation of median from `SAS` is `NA`.
+$$ Since there is no data point such that $\hat{S}(t_j)$ is strictly less then $0.5$, the estimation of median from `SAS` is `NA`.
 
 ### References
+
 [proc lifetest](https://documentation.sas.com/doc/en/pgmsascdc/9.4_3.4/statug/statug_lifetest_details03.htm)\
 
 [survival: Survival Analysis](https://cran.r-project.org/web/packages/survival/survival.pdf)
-
