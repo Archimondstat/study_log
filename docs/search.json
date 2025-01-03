@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "My Irregular Blog",
     "section": "",
-    "text": "Difference between R and SAS in estimating median survival time\n\n\n\n\n\n\n\nR\n\n\nSAS\n\n\nsurvival\n\n\n\n\n\n\n\n\n\n\n\nJan 3, 2025\n\n\nZhanwen Peng\n\n\n\n\n\n\n  \n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\n\n\nDec 31, 2024\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Difference between R and SAS in estimating median survival time\n\n\n\n\n\n\n\nR\n\n\nSAS\n\n\nsurvival\n\n\n\n\n\n\n\n\n\n\n\nJan 3, 2025\n\n\nZhanwen Peng\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/post-with-code/index.html",
     "href": "posts/post-with-code/index.html",
     "title": "Difference between R and SAS in estimating median survival time",
     "section": "",
-    "text": "library(SASmarkdown)\nlibrary(tidyverse)\nlibrary(survival)\nlibrary(survminer)\n\nCreate a simple survival dataset in tibble form.\n\nsurv_data &lt;- tribble(\n  ~AVAL, ~CNSR,\n  1,   0,\n  4,   0,\n  7,   1,\n  8,   1,\n)\nsurv_data\n\n# A tibble: 4 × 2\n   AVAL  CNSR\n  &lt;dbl&gt; &lt;dbl&gt;\n1     1     0\n2     4     0\n3     7     1\n4     8     1\n\n\nUsing survival package in r to estimate the median survival time and plot the KM graph.\n\nkm_model &lt;- survfit(Surv(AVAL, CNSR==0) ~ 1, data = surv_data,conf.type=c(\"log-log\"))\nggsurvplot(km_model, data = surv_data, risk.table = FALSE, conf.int = F,\n           title = \"Dummy survival data\", \n           submain = \"Kaplan-Meier estimates\", \n           break.x.by = 1,\n           ylab = \"Survival\",\n           xlab = \"AVAL\",\n           legend.title = \"\",surv.median.line = \"hv\")\n\n\n\n\nwe can see that in \\(t=4\\), the KM graph coincides with line \\(y=0.5\\), then we estimate the median survival time in r,\n\nquantile(km_model,0.5)$quantile\n\n50 \n 6 \n\n\nAccording the result above, the estimated median is \\(6\\).\nWhat if we use the same dataset but estimate survival median using proc lifetest in SAS instead.\n\noption locale='en_us';\ndata surv_data;\n    input AVAL CNSR;\n    cards;\n    1 0\n    4 0\n    6 1\n    8 1\n    ;\nrun;\n\nods exclude all;\nods output productlimitestimates=est Quartiles=ql;\nproc lifetest data=surv_data method=km reduceout outsurv=plc ;\n    time AVAL*CNSR(1);\nrun;\nods exclude close;\n\nproc print data=ql;\nrun;\n\n                                                         Lower       Upper\nObs    STRATUM    Percent    Estimate    Transform       Limit       Limit\n\n 1        1           75       .          LOGLOG       1.00000      .     \n 2        1           50       .          LOGLOG       1.00000      .     \n 3        1           25      2.50000     LOGLOG       1.00000      .     \n\n\nWe can see that the estimation of median is actually NA, this means that R and SAS are using different formula to estimate the median.\nIn short, survival package in R and early version of SAS (such as 9.1) estimate the quantiles using: \\[\n\\begin{aligned}\nq_p &= \\frac{1}{2}(\\inf_t\\{1-\\hat{S}(t)\\ge p\\}+\\sup_t\\{1-\\hat{S}(t)\\le q\\})\\\\\n&=\\frac{1}{2}(\\inf_t\\{\\hat{S}(t)\\le 1-p\\}+\\sup_t\\{\\hat{S}(t)\\ge 1-q\\})\\\n\\end{aligned}\n\\] Therefore the result from survival is \\(\\frac{1}{2}(4+8)=6\\).\nIn SAS 9.4, the formula is \\[\nq_p = \\min\\{t_j|\\hat{S}(t_j)&lt;1-p\\}\n\\] Since there is no data point such that \\(\\hat{S}(t_j)\\) is strictly less then \\(0.5\\), the estimation of median from SAS is NA.\n\nReferences\nproc lifetest\n\nsurvival: Survival Analysis"
+    "text": "library(SASmarkdown)\nlibrary(tidyverse)\nlibrary(survival)\nlibrary(survminer)\n\nIn this post we are going to discuss about the difference between R and SAS in estimating median survival time.\nFirstly, Create a simple survival dataset in tibble form.\n\nsurv_data &lt;- tribble(\n  ~AVAL, ~CNSR,\n  1,   0,\n  4,   0,\n  7,   1,\n  8,   1,\n)\nsurv_data\n\n# A tibble: 4 × 2\n   AVAL  CNSR\n  &lt;dbl&gt; &lt;dbl&gt;\n1     1     0\n2     4     0\n3     7     1\n4     8     1\n\n\nUsing survival package in r to estimate the median survival time and plot the KM graph.\n\nkm_model &lt;- survfit(Surv(AVAL, CNSR==0) ~ 1, data = surv_data,conf.type=c(\"log-log\"))\nggsurvplot(km_model, data = surv_data, risk.table = FALSE, conf.int = F,\n           title = \"Dummy survival data\", \n           submain = \"Kaplan-Meier estimates\", \n           break.x.by = 1,\n           ylab = \"Survival\",\n           xlab = \"AVAL\",\n           legend.title = \"\",surv.median.line = \"hv\")\n\n\n\n\nwe can see that in \\(t=4\\), the KM graph coincides with line \\(y=0.5\\), then we estimate the median survival time in r,\n\nquantile(km_model,0.5)$quantile\n\n50 \n 6 \n\n\nAccording the result above, the estimated median is \\(6\\).\nWhat if we use the same dataset but estimate survival median using proc lifetest in SAS instead.\n\noption locale='en_us';\ndata surv_data;\n    input AVAL CNSR;\n    cards;\n    1 0\n    4 0\n    6 1\n    8 1\n    ;\nrun;\n\nods exclude all;\nods output productlimitestimates=est Quartiles=ql;\nproc lifetest data=surv_data method=km reduceout outsurv=plc ;\n    time AVAL*CNSR(1);\nrun;\nods exclude close;\n\nproc print data=ql;\nrun;\n\n                                                         Lower       Upper\nObs    STRATUM    Percent    Estimate    Transform       Limit       Limit\n\n 1        1           75       .          LOGLOG       1.00000      .     \n 2        1           50       .          LOGLOG       1.00000      .     \n 3        1           25      2.50000     LOGLOG       1.00000      .     \n\n\nWe can see that the estimation of median is actually NA, this means that R and SAS are using different formula to estimate the median.\nIn short, survival package in R and early version of SAS (such as 9.1) estimate the quantiles using: \\[\n\\begin{aligned}\nq_p &= \\frac{1}{2}(\\inf_t\\{1-\\hat{S}(t)\\ge p\\}+\\sup_t\\{1-\\hat{S}(t)\\le q\\})\\\\\n&=\\frac{1}{2}(\\inf_t\\{\\hat{S}(t)\\le 1-p\\}+\\sup_t\\{\\hat{S}(t)\\ge 1-q\\})\\\n\\end{aligned}\n\\] Therefore the result from survival is \\(\\frac{1}{2}(4+8)=6\\).\nIn SAS 9.4, the formula is \\[\nq_p = \\min\\{t_j|\\hat{S}(t_j)&lt;1-p\\}\n\\] Since there is no data point such that \\(\\hat{S}(t_j)\\) is strictly less then \\(0.5\\), the estimation of median from SAS is NA.\n\nReferences\nproc lifetest\n\nsurvival: Survival Analysis"
   },
   {
     "objectID": "others/CHeck1/index.html",
@@ -25,7 +25,7 @@
     "href": "about.html",
     "title": "Zhanwen Peng",
     "section": "",
-    "text": "A Biostatistician, A former child."
+    "text": "A former child."
   },
   {
     "objectID": "others.html",
@@ -46,13 +46,20 @@
     "href": "about.html#education",
     "title": "Zhanwen Peng",
     "section": "Education",
-    "text": "Education\nApplied mathematics"
+    "text": "Education\nApplied mathematics."
   },
   {
     "objectID": "about.html#introduction",
     "href": "about.html#introduction",
     "title": "Zhanwen Peng",
     "section": "",
-    "text": "A Biostatistician, A former child."
+    "text": "A former child."
+  },
+  {
+    "objectID": "about.html#experience",
+    "href": "about.html#experience",
+    "title": "Zhanwen Peng",
+    "section": "Experience",
+    "text": "Experience\nAkesobio | Biostatistician | Feb 2024 - present"
   }
 ]

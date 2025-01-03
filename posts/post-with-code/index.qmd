@@ -3,7 +3,7 @@ title: "Difference between R and SAS in estimating median survival time"
 author: "Zhanwen Peng"
 date: "2025-01-03"
 categories: [R, SAS, survival]
-image: "image.jpg"
+code-block-border-left: true
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +20,9 @@ library(survival)
 library(survminer)
 ```
 
-Create a simple survival dataset in tibble form.
+In this post we are going to discuss about the difference between R and SAS in estimating median survival time.
+
+Firstly, Create a simple survival dataset in tibble form.
 
 ```{r}
 surv_data <- tribble(
