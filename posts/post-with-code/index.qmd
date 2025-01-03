@@ -44,3 +44,18 @@ ggsurvplot(km_model, data = surv_data, risk.table = FALSE, conf.int = F,
            xlab = "AVAL",
            legend.title = "",surv.median.line = "hv")
 ```
+
+we can see that in $t=4$, the KM graph coincides with line $y=0.5$, then we estimate the median survival time in `r`,
+```{r}
+quantile(km_model,0.5)$quantile
+```
+According the result above, the estimated median is $6$.
+
+In short, `survival` package in `R` and early version of `SAS` (such as 9.1) estimate the quantiles using:
+$$
+\begin{aligned}
+q_p &= \frac{1}{2}(\inf_t\{1-\hat{S}(t)\ge p\}+\sup_t\{1-\hat{S}(t)\le q\})\\
+&=\frac{1}{2}(\inf_t\{\hat{S}(t)\le 1-p\}+\sup_t\{\hat{S}(t)\ge 1-q\})\
+\end{aligned}
+$$
+Therefore the result from `survival` is $\frac{1}{2}(4+8)=6$.
