@@ -2,7 +2,7 @@
 title: "Difference between R and SAS in estimating median survival time"
 author: "Zhanwen Peng"
 date: "2025-01-03"
-categories: [news, code, analysis]
+categories: [R, SAS, survival]
 image: "image.jpg"
 ---
 
