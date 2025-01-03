@@ -1,0 +1,44 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "My Irregular Blog",
+    "section": "",
+    "text": "A test Post\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nJan 3, 2025\n\n\nArchimondstat\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nDec 31, 2024\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "A test Post",
+    "section": "",
+    "text": "This is a post with executable code.\n\n1 + 1\n\n[1] 2\n\n\n\nlibrary(SASmarkdown)\nlibrary(tidyverse)\nlibrary(survival)\nlibrary(survminer)\n\nCreate a simple survival dataset in tibble form.\n\nsurv_data &lt;- tribble(\n  ~AVAL, ~CNSR,\n  1,   0,\n  4,   0,\n  7,   1,\n  8,   1,\n)\nsurv_data\n\n# A tibble: 4 × 2\n   AVAL  CNSR\n  &lt;dbl&gt; &lt;dbl&gt;\n1     1     0\n2     4     0\n3     7     1\n4     8     1\n\n\nUsing survival package in r to estimate the median survival time and plot the KM graph.\n\nkm_model &lt;- survfit(Surv(AVAL, CNSR==0) ~ 1, data = surv_data,conf.type=c(\"log-log\"))\nggsurvplot(km_model, data = surv_data, risk.table = FALSE, conf.int = F,\n           title = \"Dummy survival data\", \n           submain = \"Kaplan-Meier estimates\", \n           break.x.by = 1,\n           ylab = \"Survival\",\n           xlab = \"AVAL\",\n           legend.title = \"\",surv.median.line = \"hv\")"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About me",
+    "section": "",
+    "text": "A blog that is being built."
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  },
+  {
+    "objectID": "others.html",
+    "href": "others.html",
+    "title": "Others",
+    "section": "",
+    "text": "A test Post2\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nJan 3, 2025\n\n\nArchimondstat\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "others/CHeck1/index.html",
+    "href": "others/CHeck1/index.html",
+    "title": "A test Post2",
+    "section": "",
+    "text": "Test in others."
+  }
+]

@@ -1,0 +1,46 @@
+---
+title: "A test Post"
+author: "Archimondstat"
+date: "2025-01-03"
+categories: [news, code, analysis]
+image: "image.jpg"
+---
+
+This is a post with executable code.
+
+```{r}
+1 + 1
+```
+
+```{r, message=FALSE}
+library(SASmarkdown)
+library(tidyverse)
+library(survival)
+library(survminer)
+```
+
+Create a simple survival dataset in tibble form.
+
+```{r}
+surv_data <- tribble(
+  ~AVAL, ~CNSR,
+  1,   0,
+  4,   0,
+  7,   1,
+  8,   1,
+)
+surv_data
+```
+
+Using `survival` package in `r` to estimate the median survival time and plot the KM graph.
+
+```{r}
+km_model <- survfit(Surv(AVAL, CNSR==0) ~ 1, data = surv_data,conf.type=c("log-log"))
+ggsurvplot(km_model, data = surv_data, risk.table = FALSE, conf.int = F,
+           title = "Dummy survival data", 
+           submain = "Kaplan-Meier estimates", 
+           break.x.by = 1,
+           ylab = "Survival",
+           xlab = "AVAL",
+           legend.title = "",surv.median.line = "hv")
+```
