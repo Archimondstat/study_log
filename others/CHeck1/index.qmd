@@ -3,7 +3,9 @@ title: "A test Post2"
 author: "Archimondstat"
 date: "2025-01-03"
 categories: [news, code, analysis]
-image: "image.jpg"
+#image: "image.jpg"
 ---
 
 Test in `others`.
+
+Anything new?
